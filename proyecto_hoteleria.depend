@@ -1,0 +1,35 @@
+# depslib dependency file v1.0
+1700750167 source:c:\users\administrator\desktop\tp laboratorio de computacion-hoteleria\proyecto_hoteleria\main.cpp
+	<iostream>
+	<string.h>
+	"clases.h"
+	"disenio_menu.h"
+	<wchar.h>
+	<locale.h>
+	<stdlib.h>
+
+1701373209 c:\users\administrator\desktop\tp laboratorio de computacion-hoteleria\proyecto_hoteleria\clases.h
+	<iostream>
+	<string.h>
+	"rlutil.h"
+
+1701372010 c:\users\administrator\desktop\tp laboratorio de computacion-hoteleria\proyecto_hoteleria\disenio_menu.h
+	<iostream>
+	"rlutil.h"
+	<wchar.h>
+	<locale.h>
+
+1699728216 c:\users\administrator\desktop\tp laboratorio de computacion-hoteleria\proyecto_hoteleria\rlutil.h
+	<iostream>
+	<string>
+	<cstdio>
+	<stdio.h>
+	<string.h>
+	<windows.h>
+	<conio.h>
+	<termios.h>
+	<unistd.h>
+	<sys/ioctl.h>
+	<sys/types.h>
+	<sys/time.h>
+
