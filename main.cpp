@@ -1,19 +1,16 @@
 #include <iostream>
 #include <string.h>
+#include <wchar.h>
+#include <locale.h>
 #include "clases.h"
+#include "manejo_archivos.h"
+#include "cargas.h"
 #include "disenio_menu.h"
 #include <wchar.h>
 #include <locale.h>
 #include <stdlib.h>
 
-
-//#include "funciones";
-
 using namespace std;
-
-
-
-
 
 int main(){
 menu programa;
