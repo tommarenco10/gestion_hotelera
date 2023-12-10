@@ -2,14 +2,8 @@
 #define DISENIO_MENU_H
 #include <iostream>
 #include "rlutil.h"
-#include <wchar.h>
-#include <locale.h>
-
-
-
 
 using namespace std;
-
 
 class menu{
 
@@ -83,7 +77,7 @@ cargarCadena(dato,29);
 posicion=hotel_m.buscarArchivo(dato);
 if (posicion!=-1){
 cout<<"\nEsta seguro de trabajar sobre este hotel?"<<endl;
-if(!confirmarPresionandoSS())pantalla_pp();
+if(!confirmacion())pantalla_pp();
 hotel_actual=hotel_m.posicionarArchivo(posicion);
 menu_principal();
 }
@@ -95,24 +89,24 @@ pantalla_pp();
 }
 
 
-//elegir_hotel();
 
 }
 
 //if(y==5)eliminar_registros();// Sera lo mismo pero para entrar en la parte del archivo correspondiente.
 if(y==7){
-hotel_m.escribirArchivo();//Aca tengo que ver si esta en wb o que onda.
+Hotel nuevo;
+nuevo.Cargar();
+hotel_m.escribirArchivo(nuevo);//Aca tengo que ver si esta en wb o que onda.
+presionex();
 pantalla_pp();
 }
 
 
-if(y==9)exit(1);//Terminara el programa.
-break;
-
-default:
-break;
+if(y==9){
+if(confirmacion())exit(1);//Terminara el programa.
+pantalla_pp();
 }
-
+}
 }while(opcion!=0);
 }
 
@@ -192,7 +186,7 @@ break;
 break;
 
 case 1: //enter
-if(y==3)menu_reservas(nuevo);
+if(y==3)menu_reservas();
 if(y==5)menu_habitaciones();
 if(y==7)menu_servicios();
 if(y==9)menu_empleados();
@@ -212,16 +206,6 @@ break;
 
 
 
-void confirmacion(){
-char x;
-rlutil::cls();
-cout<<"Realmente desea salir(Presione S/s para salir)";
-cin>>x;
-if(x=='s'||'S'){
-exit(1);
-}
-pantalla_pp();
-}
 
 void menu_servicios(){
 rlutil::cls();
@@ -293,7 +277,7 @@ rlutil::cls();
 int posicion=gestion.busquedaArchivo(servicio);
 if(posicion!=-1){
 cout<<"Esta seguro de que quiere dar de baja el servicio?."<<endl;
-if(confirmarPresionandoSS()){
+if(confirmacion()){
 nuevo.setEstado(false);
 gestion.sobreEscribir(nuevo,posicion);
 gestion.bajaFisica();
@@ -340,9 +324,8 @@ break;
 void menu_habitaciones(){
 rlutil::cls();
 int opcion=1,y=3,pos=0;
-Habitacion nuevo;
-archivoHabitacion guardar("habitaciones.dat");
 
+archivoHabitacion guardar("habitaciones.dat");
 rlutil::hidecursor();//Oculta el cursor para que no moleste.
 do{
     rlutil::locate(20, 1);
@@ -390,16 +373,18 @@ break;
 case 1: //enter
 if(y==3){
 rlutil::cls();
+Habitacion nuevo;
 nuevo.Cargar();
+guardar.escribirArchivo(nuevo);
 presionex();
 menu_habitaciones();
-
 }
+
+
 //if(y==5)menu_habitaciones();
 if(y==7){
 
 guardar.listarArchivo();
-cout<<guardar.cantidadHabitaciones();
 presionex();
 menu_habitaciones();
 }
@@ -479,7 +464,7 @@ int pos=nuevo.buscarArchivo(interno);
 operacion=nuevo.leerRegistro(pos);
 if(pos!=-1){
 cout<<"Estas seguro de que quieres darlo de baja?"<<endl;
-if(confirmarPresionandoSS()){
+if(confirmacion()){
 operacion.setEstado(false);
 bool guardo=nuevo.sobreEscribir(operacion,pos);//Confirmar la sobreescritura.
 if(guardo){
@@ -520,13 +505,13 @@ break;
 
 
 
-void menu_reservas(Hotel x){
+void menu_reservas(){
 rlutil::cls();
 archivoReserva archivo("reservas.dat");
 
 reserva nueva;//Abrirlo en la posicon correspondiente o como sea.
 
-nueva.setId(x.getIdhotel());//CON ESTO RELACIONAMOS LOS DOS DATOS EN CASO DE SER UNA NUEVA RESERVA, EN AGREGAR RESERVA DA.
+//nueva.setId(x.getIdhotel());//CON ESTO RELACIONAMOS LOS DOS DATOS EN CASO DE SER UNA NUEVA RESERVA, EN AGREGAR RESERVA DA.
 
 int opcion=1,y=3;
 rlutil::hidecursor();//Oculta el cursor para que no moleste.
@@ -549,7 +534,6 @@ do{
 
     rlutil::locate(8,0+y);
 cout<<char(175);
-//rlutil::anykey();//Funcion que espera que toque cualquier tecla
 switch(rlutil::getkey()){
 case 14:
 rlutil::locate(8,0+y);
@@ -575,11 +559,10 @@ break;
 
 case 1: //enter
 if(y==3){
-nueva.Cargar();//Relacionarlo con el id del hotel, porque depende del hotel los serivicios que nos brindara.
+nueva.Cargar();
 archivo.escribirArchivo(nueva);
 rlutil::cls();
-menu_reservas(x);
-//menu_principal();
+menu_reservas();
 }
 if(y==5){
 rlutil::cls();
@@ -594,13 +577,13 @@ cout<<"Reserva encontrada:"<<endl;
 nueva=archivo.leerArchivo(pos);
 nueva.Mostrar();
 cout<<"\n\nEstas seguro de dar de baja la reserva?"<<endl;
-if(confirmarPresionandoSS()){
+if(confirmacion()){
 nueva.setEstado(false);
 archivo.sobreEscribir(nueva,pos);
 archivo.bajaFisica();
 cout<<"\n\nBaja de reserva realizada exitosamente."<<endl;
 presionex();
-menu_reservas(x);
+menu_reservas();
 
 }
 
@@ -610,7 +593,7 @@ menu_reservas(x);
 if(y==7){
 archivo.listarArchivo();
 presionex();
-menu_reservas(x);
+menu_reservas();
 //menu_principal();
 }
 if(y==11)menu_principal();
@@ -629,7 +612,7 @@ break;
 void menu_listados(){
 rlutil::cls();
 int opcion=1,y=3;
-archivoReserva listar("reservas.dat");
+archivoReserva reservas("reservas.dat");
 archivoHabitacion habitaciones("habitaciones.dat");
 archivoServicio  servicios("servicios.dat");
 rlutil::hidecursor();//Oculta el cursor para que no moleste.
@@ -679,6 +662,7 @@ break;
 
 case 1: //enter
 if(y==3){
+if(reservas.archivoExistente()){
 int op;
 rlutil::cls();
 cout <<"\n1-Listar por fecha de llegada." << endl;
@@ -688,13 +672,13 @@ cout<<"\n\n\nIngrese el numero de opcion a seleccionar: ";
 cin>>op;
 switch(op){
 case 1:
-listar.ordenarPorFechaLlegada();
+reservas.ordenarPorFechaLlegada();
 presionex();
 menu_listados();
 break;
 
 case 2:
-listar.ordenarPorFechaSalida();
+reservas.ordenarPorFechaSalida();
 presionex();
 menu_listados();
 break;
@@ -712,6 +696,13 @@ presionex();
 menu_listados();
 
 }
+}
+else{
+rlutil::cls();
+cout<<"No hay ninguna reserva registrada."<<endl;
+presionex();
+menu_listados();
+}
 
 }
 
@@ -722,26 +713,27 @@ menu_listados();
 
 if(y==5){
  int op;
+if(reservas.archivoExistente()){
         rlutil::cls();
         cout << "\n1-Listar por nombre." << endl;
         cout << "\n2-Listar por apellido." << endl;
-        cout << "\n3-Listar por numero de identificación(DNI)." << endl;
+        cout << "\n3-Listar por numero de identificaciÃ³n(DNI)." << endl;
         cout << "\n\n\nIngrese el numero de opcion a seleccionar: ";
         cin >> op;
 
         switch (op) {
         case 1:
-            listar.ordenarNH();
+            reservas.ordenarNH();
             menu_listados();
             break;
 
         case 2:
-            listar.ordenarAH();
+            reservas.ordenarAH();
             menu_listados();
             break;
 
         case 3:
-            listar.ordenarPorDNI();
+            reservas.ordenarPorDNI();
             menu_listados();
             break;
 
@@ -751,17 +743,24 @@ if(y==5){
             menu_listados();
               break;
         }
+}
+else{
+rlutil::cls();
+cout<<"No hay ninguna reserva registrada."<<endl;
+presionex();
+menu_listados();
+}
     }
-
 
 
 
 
 if(y==7){
 int op;
+if(habitaciones.archivoExistente()){
         rlutil::cls();
         cout << "\n1-Listar por tipo de habitacion." << endl;
-        cout << "\n2-Listar por estado (ocupadas primero)." << endl;
+        cout << "\n2-Listar por estado (En refacciones primero)." << endl;
         cout << "\n3-Listar por estado (disponibles primero)." << endl;
         cout << "\n\n\nIngrese el numero de opcion a seleccionar: ";
         cin >> op;
@@ -769,6 +768,7 @@ int op;
         switch (op) {
         case 1:
             habitaciones.ordenarPorTipo();
+            presionex();
             menu_listados();
             break;
 
@@ -788,11 +788,19 @@ int op;
             menu_listados();
         }
 }
+else{
+rlutil::cls();
+cout<<"No hay ninguna reserva registrada."<<endl;
+presionex();
+menu_listados();
+}
+}
 
 
 
 if(y==9){
 int op;
+if(servicios.archivoExistente()){
         rlutil::cls();
         cout << "\n1-Listar por nombre de servicio." << endl;
         cout << "\n2-Listar por costo de servicio(menor a mayor)." << endl;
@@ -804,6 +812,7 @@ int op;
         case 1:
             servicios.ordenarPorNombre();
             menu_listados();
+            presionex();
             break;
 
         case 2:
@@ -814,6 +823,7 @@ int op;
          case 3:
            servicios.ordenarPorCosto(1);
             menu_listados();
+
             break;
 
 
@@ -823,15 +833,30 @@ int op;
             menu_listados();
         }
 }
+else{
+rlutil::cls();
+cout<<"No hay ninguna reserva registrada."<<endl;
+presionex();
+menu_listados();
+}
+}
 
 
 
 
 
 if(y==11){
-listar.listarFacturas();
+if(reservas.archivoExistente()){
+reservas.listarFacturas();
 presionex();
 menu_listados();
+}
+else{
+rlutil::cls();
+cout<<"No hay ninguna reserva registrada."<<endl;
+presionex();
+menu_listados();
+}
 }
 
 if(y==13)menu_principal();
@@ -981,9 +1006,3 @@ break;
 
 
 
-
-
-
-
-
-#endif
